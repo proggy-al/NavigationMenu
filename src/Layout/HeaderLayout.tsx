@@ -92,11 +92,7 @@ const HeaderLayout = () => {
   };
 
   return (
-    <Header style =
-    {{textAlign: 'center',
-      color: '#c93232',
-      backgroundColor: '#1f3861'
-      }}>
+    <Header>
 
 {/* 
       <Layout>
@@ -132,7 +128,6 @@ const HeaderLayout = () => {
 
 
     </Header>
-
   );
 };
 

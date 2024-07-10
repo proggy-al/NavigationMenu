@@ -6,8 +6,9 @@ const FooterLayout: React.FC = () => {
   return (    
       <Footer style =
       {{textAlign: 'center',
-        color: '#b82121',
-        backgroundColor: '#1f3861'
+        color: '#a6adb4',
+        fontWeight: 'bold',
+        backgroundColor: '#001529'
         }}>
         &copy; Made by Home {new Date().getFullYear()}
       </Footer>    

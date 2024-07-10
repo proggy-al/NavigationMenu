@@ -12,14 +12,18 @@ import NotFound from './Pages/NotFound';
 import Login from './Pages/Login';
 import Register from './Pages/Register';
 import Layout, { Content } from 'antd/es/layout/layout';
-import { Flex } from 'antd';
+import { theme } from 'antd';
 
-const App = () =>  {
-  
+const App = () => {
+
+  const {
+    token: { colorBgContainer, borderRadiusLG },
+  } = theme.useToken();
+
   const dispatch = useDispatch();
-  
+
   useEffect(() => {
-    const localToken = localStorage.getItem("token");    
+    const localToken = localStorage.getItem("token");
     if (localToken) {
       const { fullName, id, email, role }: userModel = jwtDecode(localToken);
       dispatch(setLoggedInUser({ fullName, id, email, role }));
@@ -27,24 +31,31 @@ const App = () =>  {
   }, []);
 
   return (
-    <div>    
-      <HeaderLayout />      
+    <div>
       <Layout>
-      <Content style={{
-              padding: '0 24px',
-              minHeight: 480
+        <HeaderLayout />
+
+        <Content style={{
+          padding: '0 48px',
+        }}>
+          <div
+            style={{
+              background: colorBgContainer,
+              minHeight: 280,
+              padding: 24,
+              borderRadius: borderRadiusLG,
             }}>
-        <Routes>
-          <Route path='/' element={<Home />}> </Route>
-          <Route path='/login' element={<Login />}></Route>
-          <Route path='/register' element={<Register />}></Route>
-          <Route path='/logout' element={<Home />}> </Route>
-          <Route path='*' element={<NotFound />}></Route>
-        </Routes>
+            <Routes>
+              <Route path='/' element={<Home />}> </Route>
+              <Route path='/login' element={<Login />}></Route>
+              <Route path='/register' element={<Register />}></Route>
+              <Route path='/logout' element={<Home />}> </Route>
+              <Route path='*' element={<NotFound />}></Route>
+            </Routes>
+          </div>
         </Content>
-        </Layout>
-      <FooterLayout />
-      
+        <FooterLayout />
+      </Layout>
     </div>
   );
 }
