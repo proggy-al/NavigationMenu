@@ -1,26 +1,29 @@
-import { Menu, Image, MenuProps } from "antd";
+import { Menu, Image, MenuProps, Typography } from "antd";
 import { Link, useNavigate } from "react-router-dom";
-import { UserOutlined, SettingOutlined, XOutlined, FullscreenOutlined } from '@ant-design/icons';
-import { useState } from "react";
+import { UserOutlined, SettingOutlined, XOutlined, FullscreenOutlined,HomeFilled } from '@ant-design/icons';
+import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { emptyUserState, setLoggedInUser } from "../Storage/Redux/userAuthSlice";
 import userModel from "../Interfaces/userModel";
 import { RootState } from "../Storage/Redux/store";
+import './index.css';
+import Register from "../Pages/Register";
+import Title from "antd/es/skeleton/Title";
 
 let logoPic = require("../Assets/Images/123.jpg");
 
 const NavigateMenu: React.FC = () => {
-    const [currentMenuGames, setCurrentMenuGames] = useState('');
-    const [currentMenuAdminAndUser, setCurrentMenuAdminAndUser] = useState('');
+    const [currentMenuMain, setCurrentMenuMain] = useState('');
+    const [currentMenuRight, setCurrentMenuRight] = useState('');
     const navigate = useNavigate();
     const dispatch = useDispatch();
     const userData: userModel = useSelector(
         (state: RootState) => state.userAuthStore
     );
 
-    type MenuItemAdminAndUser = Required<MenuProps>['items'][number];
+    type MenuItemRight = Required<MenuProps>['items'][number];
 
-    type MenuItemGame = Required<MenuProps>['items'][number];
+    type MenuItemMain = Required<MenuProps>['items'][number];
 
     const handleLogout = () => {
         localStorage.removeItem("token");
@@ -28,7 +31,7 @@ const NavigateMenu: React.FC = () => {
         navigate("/");
     };
 
-    const itemsAdminAndUser: MenuItemAdminAndUser[] = [
+    const itemsAdmin: MenuItemMain[] = [
         {
             label: 'Admin',
             key: 'admin',
@@ -42,28 +45,9 @@ const NavigateMenu: React.FC = () => {
                 { label: (<Link to={"/tournament"}>Турниры</Link>), key: 'tournament' },
             ],
         },
-        {
-            label: 'User',
-            key: 'user',
-            icon: <UserOutlined />,           
-            children: 
-            userData.id ? [
-                { label: "Выход", key: 'logout' },
-            ] : 
-            [
-                {
-                    label: (<Link to={"/login"}>Вход</Link>),
-                    key: 'login'
-                },
-                {
-                    label: (<Link to={"/register"}>Регистрация</Link>),
-                    key: 'register'
-                }
-            ],
-        }
     ];
 
-    const itemsGame: MenuItemGame[] = [
+    const itemsGame: MenuItemMain[] = [
         {
             label: (<Link to={"/game1"}>Game 1</Link>),
             key: 'game1',
@@ -91,63 +75,90 @@ const NavigateMenu: React.FC = () => {
         },
     ];
 
-    const onClickMenuGames: MenuProps['onClick'] = (e) => {
+    const LoginM: MenuItemRight = 
+    {
+        label: 'Login',
+            key: 'login',
+            icon: <UserOutlined />
+    }
+
+    const LogoutM: MenuItemRight = 
+    {
+        label: 'Logout',
+            key: 'logout',
+            icon: <UserOutlined />
+    }
+
+    const RgisterM: MenuItemRight = 
+    {
+        label: 'Register',
+            key: 'register',
+            icon: <UserOutlined />
+    }
+
+    const itemsRight: MenuItemRight[] = 
+    !userData.id ? 
+    [
+        LoginM, RgisterM ]:
+        [LogoutM]; 
+
+    const itemsMain: MenuItemMain[] = [
+        ...itemsAdmin,
+        ...itemsGame,
+      ];
+
+
+    const onClickMenuMain: MenuProps['onClick'] = (e) => {
         console.log('click ', e);
-        setCurrentMenuGames(e.key);
-        setCurrentMenuAdminAndUser('');
+        setCurrentMenuMain(e.key);
+        setCurrentMenuRight('');
     };
 
-    const onClickMenuAdminAndUser: MenuProps['onClick'] = (e) => {
+    const onClickMenuRight: MenuProps['onClick'] = (e) => {
         console.log('click ', e);
-        setCurrentMenuAdminAndUser(e.key);
-        setCurrentMenuGames('');
+        setCurrentMenuRight(e.key);
+        setCurrentMenuMain('');
     };
+
+const logoHome = {HomeFilled }
 
     return (
         <div>
-            {/* this is for Image (logo) */}
-            <div style={{
-                float: 'left'
-            }}>
-                <a href="/Home">
+            <div style={{float:'left'}}>
+                <Image ></Image>
+            </div>
+            <div style={{float:'left'}}>
+                {/* <a href="/Home">
                     <Image
                         src={logoPic}
                         alt="logo"
-                        style={{
-                            float: 'left',
-                            marginInline: 0,
-                            height: 64,
-                            width: 122
-                        }}
+                        style={{display: 'inline-block',width: '150px'}}
                         preview={false}
                     />
-                </a>
-            </div>
-            {/* this is for Admin and User*/}
-            <div style={{
-                float: 'left',
-                minWidth: 200
-            }}>
+                </a> */}
+            {/* Main Menu */}
                 <Menu
-                    onClick={onClickMenuAdminAndUser}
-                    selectedKeys={[currentMenuAdminAndUser]}
+                    onClick={onClickMenuMain}
+                    selectedKeys={[currentMenuMain]}
                     mode="horizontal"
-                    items={itemsAdminAndUser}
+                    items={itemsMain}
                     theme="dark"
-                    style={{ fontWeight: 'bold' }}>
+                    style={{ fontWeight: 'bold'}}
+                    overflowedIndicator={<UserOutlined />}
+                    >
                 </Menu>
             </div>
             
-            {/* this is for Games */}
-            <div>
+            {/* Right Menu*/}
+            <div style={{float:'right'}}>
                 <Menu
-                    onClick={onClickMenuGames}
-                    selectedKeys={[currentMenuGames]}
+                    onClick={onClickMenuRight}
+                    selectedKeys={[currentMenuRight]}
                     mode="horizontal"
-                    items={itemsGame}
+                    items={itemsRight}
                     theme="dark"
-                    overflowedIndicator={<FullscreenOutlined />}
-                    style={{ fontWeight: 'bold',justifyContent: 'center'
+                    overflowedIndicator={<UserOutlined />}
+                    style={{ fontWeight: 'bold',backgroundColor:'blue'
                     }}>
                 </Menu>
             </div>
