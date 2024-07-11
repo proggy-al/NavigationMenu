@@ -1,87 +1,105 @@
-import { Menu, Image, MenuProps, Divider, Layout, Space } from "antd";
+import { Menu, Image, MenuProps } from "antd";
 import { Link, useNavigate } from "react-router-dom";
-import { AppstoreOutlined, UserOutlined, SettingOutlined, XOutlined, FullscreenOutlined } from '@ant-design/icons';
+import { UserOutlined, SettingOutlined, XOutlined, FullscreenOutlined } from '@ant-design/icons';
 import { useState } from "react";
-import SubMenu from "antd/es/menu/SubMenu";
+import { useDispatch, useSelector } from "react-redux";
+import { emptyUserState, setLoggedInUser } from "../Storage/Redux/userAuthSlice";
+import userModel from "../Interfaces/userModel";
+import { RootState } from "../Storage/Redux/store";
 
 let logoPic = require("../Assets/Images/123.jpg");
 
 const NavigateMenu: React.FC = () => {
-    const [currentMenu, setCurrentMenu] = useState('');
     const [currentMenuGames, setCurrentMenuGames] = useState('');
+    const [currentMenuAdminAndUser, setCurrentMenuAdminAndUser] = useState('');
     const navigate = useNavigate();
+    const dispatch = useDispatch();
+    const userData: userModel = useSelector(
+        (state: RootState) => state.userAuthStore
+    );
 
-    type MenuItem = Required<MenuProps>['items'][number];
+    type MenuItemAdminAndUser = Required<MenuProps>['items'][number];
 
     type MenuItemGame = Required<MenuProps>['items'][number];
 
-    const items: MenuItem[] = [
+    const handleLogout = () => {
+        localStorage.removeItem("token");
+        dispatch(setLoggedInUser({ ...emptyUserState }));
+        navigate("/");
+    };
+
+    const itemsAdminAndUser: MenuItemAdminAndUser[] = [
         {
-            label: 'Панель админа',
+            label: 'Admin',
             key: 'admin',
             icon: <SettingOutlined />,
-            disabled: true,
+            disabled: userData.role?.valueOf() === "admin",
             children: [
                 { label: (<Link to={"/info"}>Новости</Link>), key: 'info' },
                 { label: (<Link to={"/country"}>Страны</Link>), key: 'country' },
                 { label: (<Link to={"/player"}>Игроки</Link>), key: 'player' },
                 { label: (<Link to={"/team"}>Команды</Link>), key: 'team' },
-                { label: (<Link to={"/tournament"}>Турниры</Link>), key: 'team' },
+                { label: (<Link to={"/tournament"}>Турниры</Link>), key: 'tournament' },
             ],
         },
         {
-            label: 'Пользователь',
+            label: 'User',
             key: 'user',
-            icon: <UserOutlined />,
-            children: [
-                { label: (<Link to={"/login"}>Вход</Link>), key: 'info' },
-                { label: (<Link to={"/register"}>Регистрация</Link>), key: 'country' },
-                { label: (<Link to={"/logout"}>Выход</Link>), key: 'player' }
+            icon: <UserOutlined />,           
+            children: 
+            userData.id ? [
+                { label: "Выход", key: 'logout' },
+            ] : 
+            [
+                {
+                    label: (<Link to={"/login"}>Вход</Link>),
+                    key: 'login'
+                },
+                {
+                    label: (<Link to={"/register"}>Регистрация</Link>),
+                    key: 'register'
+                }
             ],
-        },
+        }
     ];
 
     const itemsGame: MenuItemGame[] = [
         {
-            label: (<Link to={"/login"}>Game 1</Link>),
+            label: (<Link to={"/game1"}>Game 1</Link>),
             key: 'game1',
-            icon: <SettingOutlined />,
+            icon: <XOutlined />,
         },
         {
-            label: (<Link to={"/login"}>Game 2</Link>),
+            label: (<Link to={"/game2"}>Game 2</Link>),
             key: 'game2',
             icon: <XOutlined />,
         },
         {
-            label: (<Link to={"/login"}>Game 3</Link>),
+            label: (<Link to={"/game3"}>Game 3</Link>),
             key: 'game3',
             icon: <XOutlined />,
         },
         {
-            label: (<Link to={"/login"}>Game 4</Link>),
+            label: (<Link to={"/game4"}>Game 4</Link>),
             key: 'game4',
             icon: <XOutlined />,
         },
         {
-            label: (<Link to={"/login"}>Game 5</Link>),
+            label: (<Link to={"/game5"}>Game 5</Link>),
             key: 'game5',
             icon: <XOutlined />,
         },
     ];
 
-
-
-
-
     const onClickMenuGames: MenuProps['onClick'] = (e) => {
         console.log('click ', e);
         setCurrentMenuGames(e.key);
-        setCurrentMenu('');
+        setCurrentMenuAdminAndUser('');
     };
 
-    const onClickMenu: MenuProps['onClick'] = (e) => {
+    const onClickMenuAdminAndUser: MenuProps['onClick'] = (e) => {
         console.log('click ', e);
-        setCurrentMenu(e.key);
+        setCurrentMenuAdminAndUser(e.key);
         setCurrentMenuGames('');
     };
 
@@ -105,121 +123,33 @@ const NavigateMenu: React.FC = () => {
                     />
                 </a>
             </div>
-            {/* this is for Admin & Login/Register/Logout 
+            {/* this is for Admin and User*/}
             <div style={{
-                float: 'left'}}>
+                float: 'left',
+                minWidth: 200
+            }}>
                 <Menu
-                    selectedKeys={[currentMenu]}
-                    style={{ display: 'block' }}
+                    onClick={onClickMenuAdminAndUser}
+                    selectedKeys={[currentMenuAdminAndUser]}
                     mode="horizontal"
-                    onClick={onClickMenu}
-                    theme="dark">
-                    <SubMenu
-                        style={{
-                            fontWeight: 'bold', float: 'left'
-                        }}
-                        key="admin"
-                        icon={<SettingOutlined />}
-                        title="Панель админа">
-                        <Menu.Item
-                            style={{
-                                fontWeight: 'bold'
-                            }}
-                            key="avtors">
-                            <Link to={"/avtors"}>Avtors</Link>
-                        </Menu.Item>
-                        <Menu.Item
-                            style={{
-                                fontWeight: 'bold'
-                            }}
-                            key="books">
-                            <Link to={"/books"}>Books</Link>
-                        </Menu.Item>
-                    </SubMenu>
-                    <SubMenu
-                        key="login"
-                        icon={< UserOutlined />}>
-                        <Menu.Item
-                            style={{
-                                fontWeight: 'bold'
-                            }}
-                            key="2">
-                            <Link to={"/login"}>Логин</Link>
-                        </Menu.Item>
-                        <Menu.Item
-                            style={{
-                                fontWeight: 'bold'
-                            }}
-                            key="3">
-                            <Link to={"/register"}>Регистрация</Link>
-                        </Menu.Item>
-                    </SubMenu>
-                </Menu>
-            </div>*/}
-            <div>
-                <Menu onClick={onClickMenu} selectedKeys={[currentMenu]} mode="horizontal" items={items} theme="dark">
-
+                    items={itemsAdminAndUser}
+                    theme="dark"
+                    style={{ fontWeight: 'bold' }}>
                 </Menu>
             </div>
-            <div>
-                <Menu onClick={onClickMenuGames} selectedKeys={[currentMenuGames]} mode="horizontal" items={itemsGame} theme="dark" overflowedIndicator={<FullscreenOutlined />}>
-
-                </Menu>
-
-
-                {/* this is for Games 
+            
+            {/* this is for Games */}
             <div>
                 <Menu
-                    //style={{ marginLeft: 'auto'}}
-                    style={{ 
-                        //marginLeft: 'auto',
-                        //alignItems: "center",
-                        //marginLeft: 'auto',
-                        //justifyContent: 'center'
-                        }}
-                    theme="dark"
                     onClick={onClickMenuGames}
                     selectedKeys={[currentMenuGames]}
                     mode="horizontal"
-                    overflowedIndicator={<FullscreenOutlined />} >
-                    <Menu.Item
-                        title="Game1"
-                        style={{
-                            fontWeight: 'bold'
-                        }}
-                        key="game1"
-                        icon={<XOutlined />}>
-                        <Link to="/game1"> Game4  </Link>
-                    </Menu.Item>
-                    <Menu.Item
-                        title="Game2"
-                        style={{
-                            fontWeight: 'bold'
-                        }}
-                        key="game2"
-                        icon={<XOutlined />}>
-                        <Link to="/game2"> Game3  </Link>
-                    </Menu.Item>
-                    <Menu.Item
-                        title="Game3"
-                        style={{
-                            fontWeight: 'bold'
-                        }}
-                        key="game3"
-                        icon={<XOutlined />}>
-                        <Link to="/game3"> Game2  </Link>
-                    </Menu.Item>
-                    <Menu.Item
-                        title="Game4"
-                        style={{
-                            fontWeight: 'bold'
-                        }}
-                        key="game4"
-                        icon={<XOutlined />}>
-                        <Link to="/game4"> Game1  </Link>
-                    </Menu.Item>
+                    items={itemsGame}
+                    theme="dark"
+                    overflowedIndicator={<FullscreenOutlined />}
+                    style={{ fontWeight: 'bold',justifyContent: 'center'
+                    }}>
                 </Menu>
-            </div>*/}
             </div>
         </div>
     )
