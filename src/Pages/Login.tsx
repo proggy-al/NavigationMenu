@@ -4,7 +4,7 @@ import { useDispatch } from 'react-redux';
 import { useNavigate } from "react-router-dom";
 import { setLoggedInUser } from '../Storage/Redux/userAuthSlice';
 import { jwtDecode } from "jwt-decode";
-import { inputHelper } from '../Helper';
+import { inputHelper, toastNotify } from '../Helper';
 import userModel from '../Interfaces/userModel';
 import MainLoader from './MainLoader';
 import { Button, Col, Input } from 'antd';
@@ -28,7 +28,6 @@ function Login() {
   }
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
     setLoading(true);
     const response: apiResponse = await loginUser({
       userName: userInput.userName,
@@ -40,35 +39,38 @@ function Login() {
       localStorage.setItem("token", token);
       dispatch(setLoggedInUser({ fullName, id, email, role }));
       navigate("/");
+      toastNotify("Login successful!");
     } else if (response.error) {
+      console.log(response.data);
+      toastNotify("Login failed!");
       setError(response.error.data.errorMessages[0]);
+      toastNotify(response.error.data.errorMessages[0], "error");
     }
     setLoading(false);
   };
-
 
     return (
       <div>
         {loading && <MainLoader/>}
         <Form method='POST' onFinish={handleSubmit}>
-          <h1 className="mt-5">Login</h1>
-          <div className="mt-5">
-            <Col sm={{ span: 6, offset: 3 }} xs={12} className="mt-4">
+          <h1>Login</h1>
+          <div>
+            <Col sm={{ span: 6, offset: 3 }} xs={12}>
               <Input type="text" placeholder="Enter a name" required
               name = "userName"
               value={userInput.userName}
               onChange={handleUserInput} />
             </Col>
-            <Col sm={{ span: 6, offset: 3 }} xs={12} className="mt-4">
+            <Col sm={{ span: 6, offset: 3 }} xs={12}>
               <Input type="text" placeholder="Enter password" required
                name = "password"
                value={userInput.password}
                onChange={handleUserInput}  />
             </Col>
           </div>
-          <div className="mt-2">
-            {error && <p className="text-danger"> {error}</p>}
-            <Button type="primary">Login</Button>
+          <div>
+            {error && <p> {error}</p>}
+            <Button type="primary" htmlType="submit">Login</Button>
           </div>
         </Form>
       </div>

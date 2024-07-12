@@ -1,4 +1,4 @@
-import { Menu, Image, MenuProps } from "antd";
+import { Menu, MenuProps } from "antd";
 import { Link, useNavigate } from "react-router-dom";
 import { UserOutlined, SettingOutlined, XOutlined, FullscreenOutlined } from '@ant-design/icons';
 import { useState } from "react";
@@ -7,20 +7,17 @@ import { emptyUserState, setLoggedInUser } from "../Storage/Redux/userAuthSlice"
 import userModel from "../Interfaces/userModel";
 import { RootState } from "../Storage/Redux/store";
 
-let logoPic = require("../Assets/Images/123.jpg");
-
 const NavigateMenu: React.FC = () => {
-    const [currentMenuGames, setCurrentMenuGames] = useState('');
-    const [currentMenuAdminAndUser, setCurrentMenuAdminAndUser] = useState('');
+    const [currentMenu, setCurrentMenu] = useState('');
     const navigate = useNavigate();
     const dispatch = useDispatch();
     const userData: userModel = useSelector(
         (state: RootState) => state.userAuthStore
     );
 
-    type MenuItemAdminAndUser = Required<MenuProps>['items'][number];
+    type MenuItem = Required<MenuProps>['items'][number];
 
-    type MenuItemGame = Required<MenuProps>['items'][number];
+    type MenuItemUser = Required<MenuProps>['items'][number];   
 
     const handleLogout = () => {
         localStorage.removeItem("token");
@@ -28,7 +25,8 @@ const NavigateMenu: React.FC = () => {
         navigate("/");
     };
 
-    const itemsAdminAndUser: MenuItemAdminAndUser[] = [
+    {/*Menu for Admin*/}
+    const itemsAdmin: MenuItem[] = [
         {
             label: 'Admin',
             key: 'admin',
@@ -41,14 +39,18 @@ const NavigateMenu: React.FC = () => {
                 { label: (<Link to={"/team"}>Команды</Link>), key: 'team' },
                 { label: (<Link to={"/tournament"}>Турниры</Link>), key: 'tournament' },
             ],
-        },
+        }
+    ];
+
+    {/*Menu for гыук*/}
+    const itemsUser: MenuItemUser[] = [
         {
             label: 'User',
             key: 'user',
             icon: <UserOutlined />,           
             children: 
             userData.id ? [
-                { label: "Выход", key: 'logout' },
+                { label: "Выход", key: 'logout', onClick: handleLogout },
             ] : 
             [
                 {
@@ -63,7 +65,8 @@ const NavigateMenu: React.FC = () => {
         }
     ];
 
-    const itemsGame: MenuItemGame[] = [
+    {/*Меню для игр - формируется на основе таблицы Виды Игр*/}
+    const itemsGame: MenuItem[] = [
         {
             label: (<Link to={"/game1"}>Game 1</Link>),
             key: 'game1',
@@ -91,62 +94,40 @@ const NavigateMenu: React.FC = () => {
         },
     ];
 
-    const onClickMenuGames: MenuProps['onClick'] = (e) => {
-        console.log('click ', e);
-        setCurrentMenuGames(e.key);
-        setCurrentMenuAdminAndUser('');
-    };
+    {/*Основное меню*/}
+    const itemsMain: MenuItem[] = [
+        ...itemsAdmin,
+        ...itemsGame,
+      ];
 
-    const onClickMenuAdminAndUser: MenuProps['onClick'] = (e) => {
+    const onClickMenu: MenuProps['onClick'] = (e) => {        
         console.log('click ', e);
-        setCurrentMenuAdminAndUser(e.key);
-        setCurrentMenuGames('');
+        setCurrentMenu(e.key);              
     };
 
     return (
-        <div>
-            {/* this is for Image (logo) */}
-            <div style={{
-                float: 'left'
-            }}>
-                <a href="/Home">
-                    <Image
-                        src={logoPic}
-                        alt="logo"
-                        style={{
-                            float: 'left',
-                            marginInline: 0,
-                            height: 64,
-                            width: 122
-                        }}
-                        preview={false}
-                    />
-                </a>
-            </div>
-            {/* this is for Admin and User*/}
-            <div style={{
-                float: 'left',
-                minWidth: 200
-            }}>
+        <div >
+            {/*Главное меню*/}
+            <div >
                 <Menu
-                    onClick={onClickMenuAdminAndUser}
-                    selectedKeys={[currentMenuAdminAndUser]}
+                    onClick={onClickMenu}
+                    selectedKeys={[currentMenu]}
                     mode="horizontal"
-                    items={itemsAdminAndUser}
+                    items={itemsMain}
                     theme="dark"
                     style={{ fontWeight: 'bold' }}>
                 </Menu>
             </div>
             
-            {/* this is for Games */}
-            <div>
-                <Menu
-                    onClick={onClickMenuGames}
-                    selectedKeys={[currentMenuGames]}
+            {/* Меню для User */}
+            <div style={{
+                float: 'right'
+            }}>
+                <Menu                                      
                     mode="horizontal"
-                    items={itemsGame}
-                    theme="dark"
-                    overflowedIndicator={<FullscreenOutlined />}
+                    items={itemsUser}
+                    selectedKeys={[]}
+                    theme="dark"                    
                     style={{ fontWeight: 'bold',justifyContent: 'center'
                     }}>
                 </Menu>

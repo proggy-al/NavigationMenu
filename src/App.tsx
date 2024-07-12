@@ -12,7 +12,7 @@ import NotFound from './Pages/NotFound';
 import Login from './Pages/Login';
 import Register from './Pages/Register';
 import Layout, { Content } from 'antd/es/layout/layout';
-import { theme } from 'antd';
+import { ConfigProvider, theme } from 'antd';
 
 const App = () => {
 
@@ -30,13 +30,16 @@ const App = () => {
     }
   }, []);
 
+  const image_url = require("./Assets/Images/123.jpg");
+
   return (
-    <div>
+    <ConfigProvider theme={{ hashed: false }}>
+    <div style = {{margin: '0px 0px'}}>
       <Layout>
         <HeaderLayout />
 
         <Content style={{
-          padding: '0 48px',
+          padding: '12px 24px'
         }}>
           <div
             style={{
@@ -44,6 +47,12 @@ const App = () => {
               minHeight: 280,
               padding: 24,
               borderRadius: borderRadiusLG,
+              backgroundImage : `url(${image_url})`,
+              backgroundRepeat: 'no-repeat',              
+              backgroundPosition: 'center',
+              backgroundSize: 'cover',  
+              margin: '0px 0px'               
+        
             }}>
             <Routes>
               <Route path='/' element={<Home />}> </Route>
@@ -57,6 +66,7 @@ const App = () => {
         <FooterLayout />
       </Layout>
     </div>
+    </ConfigProvider>
   );
 }
 
