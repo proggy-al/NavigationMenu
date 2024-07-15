@@ -17,7 +17,7 @@ const HeaderLayout = () => {
   );
 
   return (
-    <div style={{padding: '0px 0px', margin: '0px 0px'}}>
+    <div style={{padding: '0px 0px', margin: '0px 0px', minWidth:'800'}}>
     <Header>
       <NavigateMenu />
     </Header>

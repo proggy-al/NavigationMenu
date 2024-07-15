@@ -9,8 +9,6 @@ import FooterLayout from './Layout/FooterLayout';
 import { Route, Routes } from 'react-router-dom';
 import Home from './Pages/Home';
 import NotFound from './Pages/NotFound';
-import Login from './Pages/Login';
-import Register from './Pages/Register';
 import Layout, { Content } from 'antd/es/layout/layout';
 import { ConfigProvider, theme } from 'antd';
 
@@ -56,9 +54,6 @@ const App = () => {
             }}>
             <Routes>
               <Route path='/' element={<Home />}> </Route>
-              <Route path='/login' element={<Login />}></Route>
-              <Route path='/register' element={<Register />}></Route>
-              <Route path='/logout' element={<Home />}> </Route>
               <Route path='*' element={<NotFound />}></Route>
             </Routes>
           </div>

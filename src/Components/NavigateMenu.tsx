@@ -1,4 +1,4 @@
-import { Menu, MenuProps } from "antd";
+import { Menu, MenuProps, Space } from "antd";
 import { Link, useNavigate } from "react-router-dom";
 import { UserOutlined, SettingOutlined, XOutlined, FullscreenOutlined } from '@ant-design/icons';
 import { useState } from "react";
@@ -6,6 +6,11 @@ import { useDispatch, useSelector } from "react-redux";
 import { emptyUserState, setLoggedInUser } from "../Storage/Redux/userAuthSlice";
 import userModel from "../Interfaces/userModel";
 import { RootState } from "../Storage/Redux/store";
+import { Typography } from 'antd';
+import { DrawerLogin } from "./DrawerLogin";
+import { DrawerRegister } from "./DrawRegister";
+
+const { Paragraph } = Typography;
 
 const NavigateMenu: React.FC = () => {
     const [currentMenu, setCurrentMenu] = useState('');
@@ -14,10 +19,26 @@ const NavigateMenu: React.FC = () => {
     const userData: userModel = useSelector(
         (state: RootState) => state.userAuthStore
     );
+    const [IsLoginOpen, setIsLoginOpen] = useState(false);
+    const [IsRegisterOpen, setIsRegisterOpen] = useState(false);
+
+    const onLogin = () => {
+        setIsLoginOpen(true);
+    }
+
+    const onRegister = () => {
+        setIsRegisterOpen(true);
+    }
+
+    const onCloseLogin = () => {
+        setIsLoginOpen(false);
+    };
+
+    const onCloseRegister = () => {
+        setIsRegisterOpen(false);
+    };
 
     type MenuItem = Required<MenuProps>['items'][number];
-
-    type MenuItemUser = Required<MenuProps>['items'][number];   
 
     const handleLogout = () => {
         localStorage.removeItem("token");
@@ -25,7 +46,7 @@ const NavigateMenu: React.FC = () => {
         navigate("/");
     };
 
-    {/*Menu for Admin*/}
+    {/*Menu for Admin*/ }
     const itemsAdmin: MenuItem[] = [
         {
             label: 'Admin',
@@ -42,30 +63,7 @@ const NavigateMenu: React.FC = () => {
         }
     ];
 
-    {/*Menu for гыук*/}
-    const itemsUser: MenuItemUser[] = [
-        {
-            label: 'User',
-            key: 'user',
-            icon: <UserOutlined />,           
-            children: 
-            userData.id ? [
-                { label: "Выход", key: 'logout', onClick: handleLogout },
-            ] : 
-            [
-                {
-                    label: (<Link to={"/login"}>Вход</Link>),
-                    key: 'login'
-                },
-                {
-                    label: (<Link to={"/register"}>Регистрация</Link>),
-                    key: 'register'
-                }
-            ],
-        }
-    ];
-
-    {/*Меню для игр - формируется на основе таблицы Виды Игр*/}
+    {/*Меню для игр - формируется на основе таблицы Виды Игр*/ }
     const itemsGame: MenuItem[] = [
         {
             label: (<Link to={"/game1"}>Game 1</Link>),
@@ -94,43 +92,55 @@ const NavigateMenu: React.FC = () => {
         },
     ];
 
-    {/*Основное меню*/}
+    {/*Основное меню*/ }
     const itemsMain: MenuItem[] = [
         ...itemsAdmin,
         ...itemsGame,
-      ];
+    ];
 
-    const onClickMenu: MenuProps['onClick'] = (e) => {        
+    const onClickMenu: MenuProps['onClick'] = (e) => {
         console.log('click ', e);
-        setCurrentMenu(e.key);              
+        setCurrentMenu(e.key);
     };
 
     return (
         <div >
             {/*Главное меню*/}
-            <div >
+            <div style={{
+                float: 'left',
+                width: '80%',
+                textAlign: "center",
+
+            }}>
                 <Menu
                     onClick={onClickMenu}
                     selectedKeys={[currentMenu]}
                     mode="horizontal"
                     items={itemsMain}
                     theme="dark"
-                    style={{ fontWeight: 'bold' }}>
+                    style={{ fontWeight: 'bold', justifyContent: 'center' }}
+                    overflowedIndicator={<FullscreenOutlined />}>
                 </Menu>
             </div>
-            
+
             {/* Меню для User */}
-            <div style={{
-                float: 'right'
-            }}>
-                <Menu                                      
-                    mode="horizontal"
-                    items={itemsUser}
-                    selectedKeys={[]}
-                    theme="dark"                    
-                    style={{ fontWeight: 'bold',justifyContent: 'center'
-                    }}>
-                </Menu>
+            <div style={{ textAlign: "right", minWidth: '20%', position: 'relative'}}>
+                <Space direction="horizontal">
+                    {!(userData.id) &&
+                        <Paragraph style={{ fontWeight: 'bold',fontSize:'16px' }} strong><a onClick={onLogin}>Вход</a></Paragraph>
+                    }
+                    {!(userData.id) && 
+                        <Paragraph style={{ fontWeight: 'bold',fontSize:'16px' }} strong><a onClick={onRegister}>Регистрация</a></Paragraph>}
+
+                    {userData.id && 
+                        <Paragraph style={{ fontWeight: 'bold',fontSize:'16px' }} strong><a onClick={handleLogout}>Выход</a></Paragraph>}
+                    <DrawerLogin
+                        IsLoginOpen={IsLoginOpen}
+                        handleCancel={onCloseLogin}/>
+                    <DrawerRegister
+                        IsRegisterOpen={IsRegisterOpen}
+                        handleCancel={onCloseRegister}/>
+                </Space>
             </div>
         </div>
     )
